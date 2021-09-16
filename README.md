@@ -23,7 +23,43 @@ This work is under BSD-2-Clause License. Please, acknowledge use of this work wi
 
     
 ## Usage
-run ipython notebook files in each of folders enclosing codes for BO, TuRBO, EBO, and MOBO.
+Run ipython notebook files in each of folders enclosing codes for BO, TuRBO, EBO, and MOBO.
+
+## Citations and References
+The original version of applied TuRBO algorithm can be found at 
+
+    @inproceedings{eriksson2019scalable,
+      title = {Scalable Global Optimization via Local {Bayesian} Optimization},
+      author = {Eriksson, David and Pearce, Michael and Gardner, Jacob and Turner, Ryan D and Poloczek, Matthias},
+      booktitle = {Advances in Neural Information Processing Systems},
+      pages = {5496--5507},
+      year = {2019},
+      url = {http://papers.nips.cc/paper/8788-scalable-global-optimization-via-local-bayesian-optimization.pdf},
+    }
+    
+The original version of applied EBO algorithm can be found at 
+
+    @inproceedings{wang2018batched,
+      title={Batched large-scale Bayesian optimization in high-dimensional spaces},
+      author={Wang, Zi and Gehring, Clement and Kohli, Pushmeet and Jegelka, Stefanie},
+      booktitle={International Conference on Artificial Intelligence and Statistics},
+      pages={745--754},
+      year={2018},
+      organization={PMLR}
+    }
+    
+The original version of applied EHVI acquisition function in MOBO can be found at 
+
+    @article{yang2019efficient,
+      title={Efficient computation of expected hypervolume improvement using box decomposition algorithms},
+      author={Yang, Kaifeng and Emmerich, Michael and Deutz, Andr{\'e} and B{\"a}ck, Thomas},
+      journal={Journal of Global Optimization},
+      volume={75},
+      number={1},
+      pages={3--34},
+      year={2019},
+      publisher={Springer}
+    }
 
 
 
