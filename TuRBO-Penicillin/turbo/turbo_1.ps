@@ -1,0 +1,2746 @@
+%!PS-Adobe-3.0
+%%BoundingBox: 24 24 571 818
+%%Title: Enscript Output
+%%For: 梁乔昊
+%%Creator: GNU Enscript 1.6.6
+%%CreationDate: Wed Jan 22 15:40:25 2020
+%%Orientation: Landscape
+%%Pages: (atend)
+%%DocumentMedia: A4 595 842 0 () ()
+%%DocumentNeededResources: (atend)
+%%EndComments
+%%BeginProlog
+%%BeginResource: procset Enscript-Prolog 1.6 6
+%
+% Procedures.
+%
+
+/_S {	% save current state
+  /_s save def
+} def
+/_R {	% restore from saved state
+  _s restore
+} def
+
+/S {	% showpage protecting gstate
+  gsave
+  showpage
+  grestore
+} bind def
+
+/MF {	% fontname newfontname -> -	make a new encoded font
+  /newfontname exch def
+  /fontname exch def
+
+  /fontdict fontname findfont def
+  /newfont fontdict maxlength dict def
+
+  fontdict {
+    exch
+    dup /FID eq {
+      % skip FID pair
+      pop pop
+    } {
+      % copy to the new font dictionary
+      exch newfont 3 1 roll put
+    } ifelse
+  } forall
+
+  newfont /FontName newfontname put
+
+  % insert only valid encoding vectors
+  encoding_vector length 256 eq {
+    newfont /Encoding encoding_vector put
+  } if
+
+  newfontname newfont definefont pop
+} def
+
+/MF_PS { % fontname newfontname -> -	make a new font preserving its enc
+  /newfontname exch def
+  /fontname exch def
+
+  /fontdict fontname findfont def
+  /newfont fontdict maxlength dict def
+
+  fontdict {
+    exch
+    dup /FID eq {
+      % skip FID pair
+      pop pop
+    } {
+      % copy to the new font dictionary
+      exch newfont 3 1 roll put
+    } ifelse
+  } forall
+
+  newfont /FontName newfontname put
+
+  newfontname newfont definefont pop
+} def
+
+/SF { % fontname width height -> -	set a new font
+  /height exch def
+  /width exch def
+
+  findfont
+  [width 0 0 height 0 0] makefont setfont
+} def
+
+/SUF { % fontname width height -> -	set a new user font
+  /height exch def
+  /width exch def
+
+  /F-gs-user-font MF
+  /F-gs-user-font width height SF
+} def
+
+/SUF_PS { % fontname width height -> -	set a new user font preserving its enc
+  /height exch def
+  /width exch def
+
+  /F-gs-user-font MF_PS
+  /F-gs-user-font width height SF
+} def
+
+/M {moveto} bind def
+/s {show} bind def
+
+/Box {	% x y w h -> -			define box path
+  /d_h exch def /d_w exch def /d_y exch def /d_x exch def
+  d_x d_y  moveto
+  d_w 0 rlineto
+  0 d_h rlineto
+  d_w neg 0 rlineto
+  closepath
+} def
+
+/bgs {	% x y height blskip gray str -> -	show string with bg color
+  /str exch def
+  /gray exch def
+  /blskip exch def
+  /height exch def
+  /y exch def
+  /x exch def
+
+  gsave
+    x y blskip sub str stringwidth pop height Box
+    gray setgray
+    fill
+  grestore
+  x y M str s
+} def
+
+/bgcs { % x y height blskip red green blue str -> -  show string with bg color
+  /str exch def
+  /blue exch def
+  /green exch def
+  /red exch def
+  /blskip exch def
+  /height exch def
+  /y exch def
+  /x exch def
+
+  gsave
+    x y blskip sub str stringwidth pop height Box
+    red green blue setrgbcolor
+    fill
+  grestore
+  x y M str s
+} def
+
+% Highlight bars.
+/highlight_bars {	% nlines lineheight output_y_margin gray -> -
+  gsave
+    setgray
+    /ymarg exch def
+    /lineheight exch def
+    /nlines exch def
+
+    % This 2 is just a magic number to sync highlight lines to text.
+    0 d_header_y ymarg sub 2 sub translate
+
+    /cw d_output_w cols div def
+    /nrows d_output_h ymarg 2 mul sub lineheight div cvi def
+
+    % for each column
+    0 1 cols 1 sub {
+      cw mul /xp exch def
+
+      % for each rows
+      0 1 nrows 1 sub {
+        /rn exch def
+        rn lineheight mul neg /yp exch def
+        rn nlines idiv 2 mod 0 eq {
+	  % Draw highlight bar.  4 is just a magic indentation.
+	  xp 4 add yp cw 8 sub lineheight neg Box fill
+	} if
+      } for
+    } for
+
+  grestore
+} def
+
+% Line highlight bar.
+/line_highlight {	% x y width height gray -> -
+  gsave
+    /gray exch def
+    Box gray setgray fill
+  grestore
+} def
+
+% Column separator lines.
+/column_lines {
+  gsave
+    .1 setlinewidth
+    0 d_footer_h translate
+    /cw d_output_w cols div def
+    1 1 cols 1 sub {
+      cw mul 0 moveto
+      0 d_output_h rlineto stroke
+    } for
+  grestore
+} def
+
+% Column borders.
+/column_borders {
+  gsave
+    .1 setlinewidth
+    0 d_footer_h moveto
+    0 d_output_h rlineto
+    d_output_w 0 rlineto
+    0 d_output_h neg rlineto
+    closepath stroke
+  grestore
+} def
+
+% Do the actual underlay drawing
+/draw_underlay {
+  ul_style 0 eq {
+    ul_str true charpath stroke
+  } {
+    ul_str show
+  } ifelse
+} def
+
+% Underlay
+/underlay {	% - -> -
+  gsave
+    0 d_page_h translate
+    d_page_h neg d_page_w atan rotate
+
+    ul_gray setgray
+    ul_font setfont
+    /dw d_page_h dup mul d_page_w dup mul add sqrt def
+    ul_str stringwidth pop dw exch sub 2 div ul_h_ptsize -2 div moveto
+    draw_underlay
+  grestore
+} def
+
+/user_underlay {	% - -> -
+  gsave
+    ul_x ul_y translate
+    ul_angle rotate
+    ul_gray setgray
+    ul_font setfont
+    0 0 ul_h_ptsize 2 div sub moveto
+    draw_underlay
+  grestore
+} def
+
+% Page prefeed
+/page_prefeed {		% bool -> -
+  statusdict /prefeed known {
+    statusdict exch /prefeed exch put
+  } {
+    pop
+  } ifelse
+} def
+
+% Wrapped line markers
+/wrapped_line_mark {	% x y charwith charheight type -> -
+  /type exch def
+  /h exch def
+  /w exch def
+  /y exch def
+  /x exch def
+
+  type 2 eq {
+    % Black boxes (like TeX does)
+    gsave
+      0 setlinewidth
+      x w 4 div add y M
+      0 h rlineto w 2 div 0 rlineto 0 h neg rlineto
+      closepath fill
+    grestore
+  } {
+    type 3 eq {
+      % Small arrows
+      gsave
+        .2 setlinewidth
+        x w 2 div add y h 2 div add M
+        w 4 div 0 rlineto
+        x w 4 div add y lineto stroke
+
+        x w 4 div add w 8 div add y h 4 div add M
+        x w 4 div add y lineto
+	w 4 div h 8 div rlineto stroke
+      grestore
+    } {
+      % do nothing
+    } ifelse
+  } ifelse
+} def
+
+% EPSF import.
+
+/BeginEPSF {
+  /b4_Inc_state save def    		% Save state for cleanup
+  /dict_count countdictstack def	% Count objects on dict stack
+  /op_count count 1 sub def		% Count objects on operand stack
+  userdict begin
+  /showpage { } def
+  0 setgray 0 setlinecap
+  1 setlinewidth 0 setlinejoin
+  10 setmiterlimit [ ] 0 setdash newpath
+  /languagelevel where {
+    pop languagelevel
+    1 ne {
+      false setstrokeadjust false setoverprint
+    } if
+  } if
+} bind def
+
+/EndEPSF {
+  count op_count sub { pos } repeat	% Clean up stacks
+  countdictstack dict_count sub { end } repeat
+  b4_Inc_state restore
+} bind def
+
+% Check PostScript language level.
+/languagelevel where {
+  pop /gs_languagelevel languagelevel def
+} {
+  /gs_languagelevel 1 def
+} ifelse
+%%EndResource
+%%BeginResource: procset Enscript-Encoding-88591 1.6 6
+/encoding_vector [
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/space        	/exclam       	/quotedbl     	/numbersign   	
+/dollar       	/percent      	/ampersand    	/quoteright   	
+/parenleft    	/parenright   	/asterisk     	/plus         	
+/comma        	/hyphen       	/period       	/slash        	
+/zero         	/one          	/two          	/three        	
+/four         	/five         	/six          	/seven        	
+/eight        	/nine         	/colon        	/semicolon    	
+/less         	/equal        	/greater      	/question     	
+/at           	/A            	/B            	/C            	
+/D            	/E            	/F            	/G            	
+/H            	/I            	/J            	/K            	
+/L            	/M            	/N            	/O            	
+/P            	/Q            	/R            	/S            	
+/T            	/U            	/V            	/W            	
+/X            	/Y            	/Z            	/bracketleft  	
+/backslash    	/bracketright 	/asciicircum  	/underscore   	
+/quoteleft    	/a            	/b            	/c            	
+/d            	/e            	/f            	/g            	
+/h            	/i            	/j            	/k            	
+/l            	/m            	/n            	/o            	
+/p            	/q            	/r            	/s            	
+/t            	/u            	/v            	/w            	
+/x            	/y            	/z            	/braceleft    	
+/bar          	/braceright   	/tilde        	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/space        	/exclamdown   	/cent         	/sterling     	
+/currency     	/yen          	/brokenbar    	/section      	
+/dieresis     	/copyright    	/ordfeminine  	/guillemotleft	
+/logicalnot   	/hyphen       	/registered   	/macron       	
+/degree       	/plusminus    	/twosuperior  	/threesuperior	
+/acute        	/mu           	/paragraph    	/bullet       	
+/cedilla      	/onesuperior  	/ordmasculine 	/guillemotright	
+/onequarter   	/onehalf      	/threequarters	/questiondown 	
+/Agrave       	/Aacute       	/Acircumflex  	/Atilde       	
+/Adieresis    	/Aring        	/AE           	/Ccedilla     	
+/Egrave       	/Eacute       	/Ecircumflex  	/Edieresis    	
+/Igrave       	/Iacute       	/Icircumflex  	/Idieresis    	
+/Eth          	/Ntilde       	/Ograve       	/Oacute       	
+/Ocircumflex  	/Otilde       	/Odieresis    	/multiply     	
+/Oslash       	/Ugrave       	/Uacute       	/Ucircumflex  	
+/Udieresis    	/Yacute       	/Thorn        	/germandbls   	
+/agrave       	/aacute       	/acircumflex  	/atilde       	
+/adieresis    	/aring        	/ae           	/ccedilla     	
+/egrave       	/eacute       	/ecircumflex  	/edieresis    	
+/igrave       	/iacute       	/icircumflex  	/idieresis    	
+/eth          	/ntilde       	/ograve       	/oacute       	
+/ocircumflex  	/otilde       	/odieresis    	/divide       	
+/oslash       	/ugrave       	/uacute       	/ucircumflex  	
+/udieresis    	/yacute       	/thorn        	/ydieresis    	
+] def
+%%EndResource
+%%EndProlog
+%%BeginSetup
+%%IncludeResource: font Courier-Bold
+%%IncludeResource: font Courier
+/HFpt_w 10 def
+/HFpt_h 10 def
+/Courier-Bold /HF-gs-font MF
+/HF /HF-gs-font findfont [HFpt_w 0 0 HFpt_h 0 0] makefont def
+/Courier /F-gs-font MF
+/F-gs-font 10 10 SF
+/#copies 1 def
+% Pagedevice definitions:
+gs_languagelevel 1 gt {
+  <<
+    /PageSize [595 842] 
+  >> setpagedevice
+} if
+%%BeginResource: procset Enscript-Header-enscript 1.6 6
+%%IncludeResource: font Times-Bold
+%%IncludeResource: font Times-Roman
+
+% Fonts.
+/Times-Bold /HeaderFont-Bold MF
+/HeaderDateF /HeaderFont-Bold findfont 12 scalefont def
+
+/Times-Roman /HeaderFont-Times MF
+/HeaderHDRF /HeaderFont-Times findfont 14 scalefont def
+
+/HeaderPageNumF /Helvetica-Bold findfont 28.8 scalefont def
+
+/do_header {	% print enscript header
+  gsave
+    d_header_x d_header_y translate
+
+    % light bar
+    0 0 d_header_w d_header_h 2 div Box
+    .95 setgray fill
+
+    % dark gray boxes
+    /dbw d_header_h 2 mul def	% dark box width
+    /dbc .7 def			% dark box color
+
+    % left dark box.
+    0 0 dbw d_header_h Box
+    dbc setgray fill
+
+    0 setgray 
+    HeaderDateF setfont
+    moddatestr dup stringwidth pop dbw exch sub 2 div 
+    d_header_h 2 div 2 add moveto show
+    modtimestr dup stringwidth pop dbw exch sub 2 div 
+    d_header_h 5 div moveto show
+
+    % right dark box
+    d_header_w dbw sub 0 dbw d_header_h Box
+    dbc setgray fill
+
+    HeaderPageNumF setfont
+    1 setgray
+    pagenumstr dup
+    stringwidth pop dbw exch sub 2 div d_header_w dbw sub add
+    d_header_h .2 mul moveto show
+
+    % filename
+    0 setgray 
+    HeaderHDRF setfont
+    d_header_w fname stringwidth pop sub 2 div d_header_h 8 div moveto
+    fname show
+
+    % user supplied header string.
+    user_header_p {
+      /h d_header_h 8 div 5 mul def
+
+      % Implement strict enscript compatibility.
+      user_header_center_str () eq user_header_right_str () eq and {
+        d_header_w user_header_left_str stringwidth pop sub 2 div 
+        h moveto user_header_left_str show
+      } {
+        dbw 5 add h moveto user_header_left_str show
+
+        d_header_w user_header_center_str stringwidth pop sub 2 div 
+        h moveto user_header_center_str show
+
+	d_header_w dbw sub 5 sub user_header_right_str stringwidth pop
+	sub h moveto user_header_right_str show
+      } ifelse
+    } if
+
+  grestore
+} def
+%%EndResource
+/d_page_w 794 def
+/d_page_h 547 def
+/d_header_x 0 def
+/d_header_y 511 def
+/d_header_w 794 def
+/d_header_h 36 def
+/d_footer_x 0 def
+/d_footer_y 0 def
+/d_footer_w 794 def
+/d_footer_h 0 def
+/d_output_w 794 def
+/d_output_h 511 def
+/cols 1 def
+%%EndSetup
+%%Page: (1) 1
+%%BeginPageSetup
+_S
+90 rotate
+24 -571 translate
+/pagenum 1 def
+/fname (turbo_1.py) def
+/fdir (.) def
+/ftail (turbo_1.py) def
+% User defined strings:
+/pagenumstr (1) def
+/moddatestr (12/20/19) def
+/modtimestr (05:42:16) def
+/user_header_p false def
+/user_footer_p false def
+%%EndPageSetup
+do_header
+30 498 M (1:) s
+/Courier-Oblique 10 10 SUF
+0.698039 0.133333 0.133333 setrgbcolor
+48 498 M
+(###############################################################################) s
+/F-gs-font 10 10 SF
+30 487 M (2:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+0 setgray
+/Courier-Oblique 10 10 SUF
+0.698039 0.133333 0.133333 setrgbcolor
+48 487 M
+(# Copyright \(c\) 2019 Uber Technologies, Inc.                                  #) s
+/F-gs-font 10 10 SF
+30 476 M (3:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+0 setgray
+/Courier-Oblique 10 10 SUF
+0.698039 0.133333 0.133333 setrgbcolor
+48 476 M
+(#                                                                             #) s
+/F-gs-font 10 10 SF
+30 465 M (4:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+0 setgray
+/Courier-Oblique 10 10 SUF
+0.698039 0.133333 0.133333 setrgbcolor
+48 465 M
+(# Licensed under the Uber Non-Commercial License \(the "License"\);             #) s
+/F-gs-font 10 10 SF
+30 454 M (5:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+0 setgray
+/Courier-Oblique 10 10 SUF
+0.698039 0.133333 0.133333 setrgbcolor
+48 454 M
+(# you may not use this file except in compliance with the License.            #) s
+/F-gs-font 10 10 SF
+30 443 M (6:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+0 setgray
+/Courier-Oblique 10 10 SUF
+0.698039 0.133333 0.133333 setrgbcolor
+48 443 M
+(# You may obtain a copy of the License at the root directory of this project. #) s
+/F-gs-font 10 10 SF
+30 432 M (7:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+0 setgray
+/Courier-Oblique 10 10 SUF
+0.698039 0.133333 0.133333 setrgbcolor
+48 432 M
+(#                                                                             #) s
+/F-gs-font 10 10 SF
+30 421 M (8:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+0 setgray
+/Courier-Oblique 10 10 SUF
+0.698039 0.133333 0.133333 setrgbcolor
+48 421 M
+(# See the License for the specific language governing permissions and         #) s
+/F-gs-font 10 10 SF
+30 410 M (9:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+0 setgray
+/Courier-Oblique 10 10 SUF
+0.698039 0.133333 0.133333 setrgbcolor
+48 410 M
+(# limitations under the License.                                              #) s
+/F-gs-font 10 10 SF
+24 399 M (10:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+0 setgray
+/Courier-Oblique 10 10 SUF
+0.698039 0.133333 0.133333 setrgbcolor
+48 399 M
+(###############################################################################) s
+/F-gs-font 10 10 SF
+24 388 M (11:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+0 setgray
+24 377 M (12:) s
+/Courier-Bold 10 10 SUF
+0.627451 0.12549 0.941176 setrgbcolor
+48 377 M
+(import) s
+/F-gs-font 10 10 SF
+0 setgray
+84 377 M
+( math) s
+24 366 M (13:) s
+/Courier-Bold 10 10 SUF
+0.627451 0.12549 0.941176 setrgbcolor
+48 366 M
+(import) s
+/F-gs-font 10 10 SF
+0 setgray
+84 366 M
+( sys) s
+24 355 M (14:) s
+/Courier-Bold 10 10 SUF
+0.627451 0.12549 0.941176 setrgbcolor
+48 355 M
+(from) s
+/F-gs-font 10 10 SF
+0 setgray
+72 355 M
+( copy ) s
+/Courier-Bold 10 10 SUF
+0.627451 0.12549 0.941176 setrgbcolor
+108 355 M
+(import) s
+/F-gs-font 10 10 SF
+0 setgray
+144 355 M
+( deepcopy) s
+24 344 M (15:) s
+24 333 M (16:) s
+/Courier-Bold 10 10 SUF
+0.627451 0.12549 0.941176 setrgbcolor
+48 333 M
+(import) s
+/F-gs-font 10 10 SF
+0 setgray
+84 333 M
+( gpytorch) s
+24 322 M (17:) s
+/Courier-Bold 10 10 SUF
+0.627451 0.12549 0.941176 setrgbcolor
+48 322 M
+(import) s
+/F-gs-font 10 10 SF
+0 setgray
+84 322 M
+( numpy as np) s
+24 311 M (18:) s
+/Courier-Bold 10 10 SUF
+0.627451 0.12549 0.941176 setrgbcolor
+48 311 M
+(import) s
+/F-gs-font 10 10 SF
+0 setgray
+84 311 M
+( torch) s
+24 300 M (19:) s
+/Courier-Bold 10 10 SUF
+0.627451 0.12549 0.941176 setrgbcolor
+48 300 M
+(from) s
+/F-gs-font 10 10 SF
+0 setgray
+72 300 M
+( torch.quasirandom ) s
+/Courier-Bold 10 10 SUF
+0.627451 0.12549 0.941176 setrgbcolor
+186 300 M
+(import) s
+/F-gs-font 10 10 SF
+0 setgray
+222 300 M
+( SobolEngine) s
+24 289 M (20:) s
+24 278 M (21:) s
+/Courier-Bold 10 10 SUF
+0.627451 0.12549 0.941176 setrgbcolor
+48 278 M
+(from) s
+/F-gs-font 10 10 SF
+0 setgray
+72 278 M
+( .gp ) s
+/Courier-Bold 10 10 SUF
+0.627451 0.12549 0.941176 setrgbcolor
+102 278 M
+(import) s
+/F-gs-font 10 10 SF
+0 setgray
+138 278 M
+( train_gp) s
+24 267 M (22:) s
+/Courier-Bold 10 10 SUF
+0.627451 0.12549 0.941176 setrgbcolor
+48 267 M
+(from) s
+/F-gs-font 10 10 SF
+0 setgray
+72 267 M
+( .utils ) s
+/Courier-Bold 10 10 SUF
+0.627451 0.12549 0.941176 setrgbcolor
+120 267 M
+(import) s
+/F-gs-font 10 10 SF
+0 setgray
+156 267 M
+( from_unit_cube, latin_hypercube, to_unit_cube) s
+24 256 M (23:) s
+24 245 M (24:) s
+24 234 M (25:) s
+/Courier-Bold 10 10 SUF
+0.627451 0.12549 0.941176 setrgbcolor
+48 234 M
+(class) s
+/F-gs-font 10 10 SF
+0 setgray
+78 234 M
+( Turbo1:) s
+24 223 M (26:) s
+48 223 M
+(    ) s
+/Courier-Bold 10 10 SUF
+0.737255 0.560784 0.560784 setrgbcolor
+72 223 M
+("""The TuRBO-1 algorithm.) s
+/F-gs-font 10 10 SF
+24 212 M (27:) s
+/Courier-Bold 10 10 SUF
+/F-gs-font 10 10 SF
+24 201 M (28:) s
+/Courier-Bold 10 10 SUF
+48 201 M
+(    Parameters) s
+/F-gs-font 10 10 SF
+24 190 M (29:) s
+/Courier-Bold 10 10 SUF
+48 190 M
+(    ----------) s
+/F-gs-font 10 10 SF
+24 179 M (30:) s
+/Courier-Bold 10 10 SUF
+48 179 M
+(    f : function handle) s
+/F-gs-font 10 10 SF
+24 168 M (31:) s
+/Courier-Bold 10 10 SUF
+48 168 M
+(    lb : Lower variable bounds, numpy.array, shape \(d,\).) s
+/F-gs-font 10 10 SF
+24 157 M (32:) s
+/Courier-Bold 10 10 SUF
+48 157 M
+(    ub : Upper variable bounds, numpy.array, shape \(d,\).) s
+/F-gs-font 10 10 SF
+24 146 M (33:) s
+/Courier-Bold 10 10 SUF
+48 146 M
+(    n_init : Number of initial points \(2*dim is recommended\), int.) s
+/F-gs-font 10 10 SF
+24 135 M (34:) s
+/Courier-Bold 10 10 SUF
+48 135 M
+(    max_evals : Total evaluation budget, int.) s
+/F-gs-font 10 10 SF
+24 124 M (35:) s
+/Courier-Bold 10 10 SUF
+48 124 M
+(    batch_size : Number of points in each batch, int.) s
+/F-gs-font 10 10 SF
+24 113 M (36:) s
+/Courier-Bold 10 10 SUF
+48 113 M
+(    verbose : If you want to print information about the optimization progress, bool.) s
+/F-gs-font 10 10 SF
+24 102 M (37:) s
+/Courier-Bold 10 10 SUF
+48 102 M
+(    use_ard : If you want to use ARD for the GP kernel.) s
+/F-gs-font 10 10 SF
+24 91 M (38:) s
+/Courier-Bold 10 10 SUF
+48 91 M
+(    max_cholesky_size : Largest number of training points where we use Cholesky, int) s
+/F-gs-font 10 10 SF
+24 80 M (39:) s
+/Courier-Bold 10 10 SUF
+48 80 M
+(    n_training_steps : Number of training steps for learning the GP hypers, int) s
+/F-gs-font 10 10 SF
+24 69 M (40:) s
+/Courier-Bold 10 10 SUF
+48 69 M
+(    min_cuda : We use float64 on the CPU if we have this or fewer datapoints) s
+/F-gs-font 10 10 SF
+24 58 M (41:) s
+/Courier-Bold 10 10 SUF
+48 58 M
+(    device : Device to use for GP fitting \("cpu" or "cuda"\)) s
+/F-gs-font 10 10 SF
+24 47 M (42:) s
+/Courier-Bold 10 10 SUF
+48 47 M
+(    dtype : Dtype to use for GP fitting \("float32" or "float64"\)) s
+/F-gs-font 10 10 SF
+24 36 M (43:) s
+/Courier-Bold 10 10 SUF
+/F-gs-font 10 10 SF
+24 25 M (44:) s
+/Courier-Bold 10 10 SUF
+48 25 M
+(    Example usage:) s
+/F-gs-font 10 10 SF
+24 14 M (45:) s
+/Courier-Bold 10 10 SUF
+48 14 M
+(        turbo1 = Turbo1\(f=f, lb=lb, ub=ub, n_init=n_init, max_evals=max_evals\)) s
+/F-gs-font 10 10 SF
+24 3 M (46:) s
+/Courier-Bold 10 10 SUF
+48 3 M
+(        turbo1.optimize\(\)  # Run optimization) s
+_R
+S
+%%Page: (2) 2
+%%BeginPageSetup
+_S
+90 rotate
+24 -571 translate
+/pagenum 2 def
+/fname (turbo_1.py) def
+/fdir (.) def
+/ftail (turbo_1.py) def
+/Courier-Bold 10 10 SUF
+% User defined strings:
+/pagenumstr (2) def
+/moddatestr (12/20/19) def
+/modtimestr (05:42:16) def
+/user_header_p false def
+/user_footer_p false def
+%%EndPageSetup
+do_header
+0.737255 0.560784 0.560784 setrgbcolor
+/F-gs-font 10 10 SF
+24 498 M (47:) s
+/Courier-Bold 10 10 SUF
+48 498 M
+(        X, fX = turbo1.X, turbo1.fX  # Evaluated points) s
+/F-gs-font 10 10 SF
+24 487 M (48:) s
+/Courier-Bold 10 10 SUF
+48 487 M
+(    """) s
+/F-gs-font 10 10 SF
+0 setgray
+24 476 M (49:) s
+24 465 M (50:) s
+48 465 M
+(    ) s
+/Courier-Bold 10 10 SUF
+0.627451 0.12549 0.941176 setrgbcolor
+72 465 M
+(def) s
+/F-gs-font 10 10 SF
+0 setgray
+90 465 M
+( ) s
+/Courier-Bold 10 10 SUF
+0 0 1 setrgbcolor
+96 465 M
+(__init__) s
+/F-gs-font 10 10 SF
+0 setgray
+144 465 M
+(\() s
+24 454 M (51:) s
+48 454 M
+(        self,) s
+24 443 M (52:) s
+48 443 M
+(        f,) s
+24 432 M (53:) s
+48 432 M
+(        lb,) s
+24 421 M (54:) s
+48 421 M
+(        ub,) s
+24 410 M (55:) s
+48 410 M
+(        n_init,) s
+24 399 M (56:) s
+48 399 M
+(        max_evals,) s
+24 388 M (57:) s
+48 388 M
+(        batch_size=1,) s
+24 377 M (58:) s
+48 377 M
+(        verbose=True,) s
+24 366 M (59:) s
+48 366 M
+(        use_ard=True,) s
+24 355 M (60:) s
+48 355 M
+(        max_cholesky_size=2000,) s
+24 344 M (61:) s
+48 344 M
+(        n_training_steps=50,) s
+24 333 M (62:) s
+48 333 M
+(        min_cuda=1024,) s
+24 322 M (63:) s
+48 322 M
+(        device=) s
+/Courier-Bold 10 10 SUF
+0.737255 0.560784 0.560784 setrgbcolor
+138 322 M
+("cpu") s
+/F-gs-font 10 10 SF
+0 setgray
+168 322 M
+(,) s
+24 311 M (64:) s
+48 311 M
+(        dtype=) s
+/Courier-Bold 10 10 SUF
+0.737255 0.560784 0.560784 setrgbcolor
+132 311 M
+("float64") s
+/F-gs-font 10 10 SF
+0 setgray
+186 311 M
+(,) s
+24 300 M (65:) s
+48 300 M
+(    \):) s
+24 289 M (66:) s
+24 278 M (67:) s
+48 278 M
+(        ) s
+/Courier-Oblique 10 10 SUF
+0.698039 0.133333 0.133333 setrgbcolor
+96 278 M
+(# Very basic input checks) s
+/F-gs-font 10 10 SF
+24 267 M (68:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+0 setgray
+48 267 M
+(        ) s
+/Courier-Bold 10 10 SUF
+0.627451 0.12549 0.941176 setrgbcolor
+96 267 M
+(assert) s
+/F-gs-font 10 10 SF
+0 setgray
+132 267 M
+( lb.ndim == 1 ) s
+/Courier-Bold 10 10 SUF
+0.627451 0.12549 0.941176 setrgbcolor
+216 267 M
+(and) s
+/F-gs-font 10 10 SF
+0 setgray
+234 267 M
+( ub.ndim == 1) s
+24 256 M (69:) s
+48 256 M
+(        ) s
+/Courier-Bold 10 10 SUF
+0.627451 0.12549 0.941176 setrgbcolor
+96 256 M
+(assert) s
+/F-gs-font 10 10 SF
+0 setgray
+132 256 M
+( len\(lb\) == len\(ub\)) s
+24 245 M (70:) s
+48 245 M
+(        ) s
+/Courier-Bold 10 10 SUF
+0.627451 0.12549 0.941176 setrgbcolor
+96 245 M
+(assert) s
+/F-gs-font 10 10 SF
+0 setgray
+132 245 M
+( np.all\(ub > lb\)) s
+24 234 M (71:) s
+48 234 M
+(        ) s
+/Courier-Bold 10 10 SUF
+0.627451 0.12549 0.941176 setrgbcolor
+96 234 M
+(assert) s
+/F-gs-font 10 10 SF
+0 setgray
+132 234 M
+( max_evals > 0 ) s
+/Courier-Bold 10 10 SUF
+0.627451 0.12549 0.941176 setrgbcolor
+222 234 M
+(and) s
+/F-gs-font 10 10 SF
+0 setgray
+240 234 M
+( isinstance\(max_evals, int\)) s
+24 223 M (72:) s
+48 223 M
+(        ) s
+/Courier-Bold 10 10 SUF
+0.627451 0.12549 0.941176 setrgbcolor
+96 223 M
+(assert) s
+/F-gs-font 10 10 SF
+0 setgray
+132 223 M
+( n_init > 0 ) s
+/Courier-Bold 10 10 SUF
+0.627451 0.12549 0.941176 setrgbcolor
+204 223 M
+(and) s
+/F-gs-font 10 10 SF
+0 setgray
+222 223 M
+( isinstance\(n_init, int\)) s
+24 212 M (73:) s
+48 212 M
+(        ) s
+/Courier-Bold 10 10 SUF
+0.627451 0.12549 0.941176 setrgbcolor
+96 212 M
+(assert) s
+/F-gs-font 10 10 SF
+0 setgray
+132 212 M
+( batch_size > 0 ) s
+/Courier-Bold 10 10 SUF
+0.627451 0.12549 0.941176 setrgbcolor
+228 212 M
+(and) s
+/F-gs-font 10 10 SF
+0 setgray
+246 212 M
+( isinstance\(batch_size, int\)) s
+24 201 M (74:) s
+48 201 M
+(        ) s
+/Courier-Bold 10 10 SUF
+0.627451 0.12549 0.941176 setrgbcolor
+96 201 M
+(assert) s
+/F-gs-font 10 10 SF
+0 setgray
+132 201 M
+( isinstance\(verbose, bool\) ) s
+/Courier-Bold 10 10 SUF
+0.627451 0.12549 0.941176 setrgbcolor
+294 201 M
+(and) s
+/F-gs-font 10 10 SF
+0 setgray
+312 201 M
+( isinstance\(use_ard, bool\)) s
+24 190 M (75:) s
+48 190 M
+(        ) s
+/Courier-Bold 10 10 SUF
+0.627451 0.12549 0.941176 setrgbcolor
+96 190 M
+(assert) s
+/F-gs-font 10 10 SF
+0 setgray
+132 190 M
+( max_cholesky_size >= 0 ) s
+/Courier-Bold 10 10 SUF
+0.627451 0.12549 0.941176 setrgbcolor
+276 190 M
+(and) s
+/F-gs-font 10 10 SF
+0 setgray
+294 190 M
+( isinstance\(batch_size, int\)) s
+24 179 M (76:) s
+48 179 M
+(        ) s
+/Courier-Bold 10 10 SUF
+0.627451 0.12549 0.941176 setrgbcolor
+96 179 M
+(assert) s
+/F-gs-font 10 10 SF
+0 setgray
+132 179 M
+( n_training_steps >= 30 ) s
+/Courier-Bold 10 10 SUF
+0.627451 0.12549 0.941176 setrgbcolor
+276 179 M
+(and) s
+/F-gs-font 10 10 SF
+0 setgray
+294 179 M
+( isinstance\(n_training_steps, int\)) s
+24 168 M (77:) s
+48 168 M
+(        ) s
+/Courier-Bold 10 10 SUF
+0.627451 0.12549 0.941176 setrgbcolor
+96 168 M
+(assert) s
+/F-gs-font 10 10 SF
+0 setgray
+132 168 M
+( max_evals > n_init ) s
+/Courier-Bold 10 10 SUF
+0.627451 0.12549 0.941176 setrgbcolor
+252 168 M
+(and) s
+/F-gs-font 10 10 SF
+0 setgray
+270 168 M
+( max_evals > batch_size) s
+24 157 M (78:) s
+48 157 M
+(        ) s
+/Courier-Bold 10 10 SUF
+0.627451 0.12549 0.941176 setrgbcolor
+96 157 M
+(assert) s
+/F-gs-font 10 10 SF
+0 setgray
+132 157 M
+( device == ) s
+/Courier-Bold 10 10 SUF
+0.737255 0.560784 0.560784 setrgbcolor
+198 157 M
+("cpu") s
+/F-gs-font 10 10 SF
+0 setgray
+228 157 M
+( ) s
+/Courier-Bold 10 10 SUF
+0.627451 0.12549 0.941176 setrgbcolor
+234 157 M
+(or) s
+/F-gs-font 10 10 SF
+0 setgray
+246 157 M
+( device == ) s
+/Courier-Bold 10 10 SUF
+0.737255 0.560784 0.560784 setrgbcolor
+312 157 M
+("cuda") s
+/F-gs-font 10 10 SF
+0 setgray
+24 146 M (79:) s
+48 146 M
+(        ) s
+/Courier-Bold 10 10 SUF
+0.627451 0.12549 0.941176 setrgbcolor
+96 146 M
+(assert) s
+/F-gs-font 10 10 SF
+0 setgray
+132 146 M
+( dtype == ) s
+/Courier-Bold 10 10 SUF
+0.737255 0.560784 0.560784 setrgbcolor
+192 146 M
+("float32") s
+/F-gs-font 10 10 SF
+0 setgray
+246 146 M
+( ) s
+/Courier-Bold 10 10 SUF
+0.627451 0.12549 0.941176 setrgbcolor
+252 146 M
+(or) s
+/F-gs-font 10 10 SF
+0 setgray
+264 146 M
+( dtype == ) s
+/Courier-Bold 10 10 SUF
+0.737255 0.560784 0.560784 setrgbcolor
+324 146 M
+("float64") s
+/F-gs-font 10 10 SF
+0 setgray
+24 135 M (80:) s
+48 135 M
+(        ) s
+/Courier-Bold 10 10 SUF
+0.627451 0.12549 0.941176 setrgbcolor
+96 135 M
+(if) s
+/F-gs-font 10 10 SF
+0 setgray
+108 135 M
+( device == ) s
+/Courier-Bold 10 10 SUF
+0.737255 0.560784 0.560784 setrgbcolor
+174 135 M
+("cuda") s
+/F-gs-font 10 10 SF
+0 setgray
+210 135 M
+(:) s
+24 124 M (81:) s
+48 124 M
+(            ) s
+/Courier-Bold 10 10 SUF
+0.627451 0.12549 0.941176 setrgbcolor
+120 124 M
+(assert) s
+/F-gs-font 10 10 SF
+0 setgray
+156 124 M
+( torch.cuda.is_available\(\), ) s
+/Courier-Bold 10 10 SUF
+0.737255 0.560784 0.560784 setrgbcolor
+324 124 M
+("can't use cuda if it's not available") s
+/F-gs-font 10 10 SF
+0 setgray
+24 113 M (82:) s
+24 102 M (83:) s
+48 102 M
+(        ) s
+/Courier-Oblique 10 10 SUF
+0.698039 0.133333 0.133333 setrgbcolor
+96 102 M
+(# Save function information) s
+/F-gs-font 10 10 SF
+24 91 M (84:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+0 setgray
+48 91 M
+(        self.f = f) s
+24 80 M (85:) s
+48 80 M
+(        self.dim = len\(lb\)) s
+24 69 M (86:) s
+48 69 M
+(        self.lb = lb) s
+24 58 M (87:) s
+48 58 M
+(        self.ub = ub) s
+24 47 M (88:) s
+24 36 M (89:) s
+48 36 M
+(        ) s
+/Courier-Oblique 10 10 SUF
+0.698039 0.133333 0.133333 setrgbcolor
+96 36 M
+(# Settings) s
+/F-gs-font 10 10 SF
+24 25 M (90:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+0 setgray
+48 25 M
+(        self.n_init = n_init) s
+24 14 M (91:) s
+48 14 M
+(        self.max_evals = max_evals) s
+24 3 M (92:) s
+48 3 M
+(        self.batch_size = batch_size) s
+_R
+S
+%%Page: (3) 3
+%%BeginPageSetup
+_S
+90 rotate
+24 -571 translate
+/pagenum 3 def
+/fname (turbo_1.py) def
+/fdir (.) def
+/ftail (turbo_1.py) def
+% User defined strings:
+/pagenumstr (3) def
+/moddatestr (12/20/19) def
+/modtimestr (05:42:16) def
+/user_header_p false def
+/user_footer_p false def
+%%EndPageSetup
+do_header
+24 498 M (93:) s
+48 498 M
+(        self.verbose = verbose) s
+24 487 M (94:) s
+48 487 M
+(        self.use_ard = use_ard) s
+24 476 M (95:) s
+48 476 M
+(        self.max_cholesky_size = max_cholesky_size) s
+24 465 M (96:) s
+48 465 M
+(        self.n_training_steps = n_training_steps) s
+24 454 M (97:) s
+24 443 M (98:) s
+48 443 M
+(        ) s
+/Courier-Oblique 10 10 SUF
+0.698039 0.133333 0.133333 setrgbcolor
+96 443 M
+(# Hyperparameters) s
+/F-gs-font 10 10 SF
+24 432 M (99:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+0 setgray
+48 432 M
+(        self.mean = np.zeros\(\(0, 1\)\)) s
+18 421 M (100:) s
+48 421 M
+(        self.signal_var = np.zeros\(\(0, 1\)\)) s
+18 410 M (101:) s
+48 410 M
+(        self.noise_var = np.zeros\(\(0, 1\)\)) s
+18 399 M (102:) s
+48 399 M
+(        self.lengthscales = np.zeros\(\(0, self.dim\)\) ) s
+/Courier-Bold 10 10 SUF
+0.627451 0.12549 0.941176 setrgbcolor
+360 399 M
+(if) s
+/F-gs-font 10 10 SF
+0 setgray
+372 399 M
+( self.use_ard ) s
+/Courier-Bold 10 10 SUF
+0.627451 0.12549 0.941176 setrgbcolor
+456 399 M
+(else) s
+/F-gs-font 10 10 SF
+0 setgray
+480 399 M
+( np.zeros\(\(0, 1\)\)) s
+18 388 M (103:) s
+18 377 M (104:) s
+48 377 M
+(        ) s
+/Courier-Oblique 10 10 SUF
+0.698039 0.133333 0.133333 setrgbcolor
+96 377 M
+(# Tolerances and counters) s
+/F-gs-font 10 10 SF
+18 366 M (105:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+0 setgray
+48 366 M
+(        self.n_cand = min\(100 * self.dim, 5000\)) s
+18 355 M (106:) s
+48 355 M
+(        self.failtol = np.ceil\(np.max\([4.0 / batch_size, self.dim / batch_size]\)\)) s
+18 344 M (107:) s
+48 344 M
+(        self.succtol = 3) s
+18 333 M (108:) s
+48 333 M
+(        self.n_evals = 0) s
+18 322 M (109:) s
+18 311 M (110:) s
+48 311 M
+(        ) s
+/Courier-Oblique 10 10 SUF
+0.698039 0.133333 0.133333 setrgbcolor
+96 311 M
+(# Trust region sizes) s
+/F-gs-font 10 10 SF
+18 300 M (111:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+0 setgray
+48 300 M
+(        self.length_min = 0.5 ** 7) s
+18 289 M (112:) s
+48 289 M
+(        self.length_max = 1.6) s
+18 278 M (113:) s
+48 278 M
+(        self.length_init = 0.8) s
+18 267 M (114:) s
+18 256 M (115:) s
+48 256 M
+(        ) s
+/Courier-Oblique 10 10 SUF
+0.698039 0.133333 0.133333 setrgbcolor
+96 256 M
+(# Save the full history) s
+/F-gs-font 10 10 SF
+18 245 M (116:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+0 setgray
+48 245 M
+(        self.X = np.zeros\(\(0, self.dim\)\)) s
+18 234 M (117:) s
+48 234 M
+(        self.fX = np.zeros\(\(0, 1\)\)) s
+18 223 M (118:) s
+18 212 M (119:) s
+48 212 M
+(        ) s
+/Courier-Oblique 10 10 SUF
+0.698039 0.133333 0.133333 setrgbcolor
+96 212 M
+(# Device and dtype for GPyTorch) s
+/F-gs-font 10 10 SF
+18 201 M (120:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+0 setgray
+48 201 M
+(        self.min_cuda = min_cuda) s
+18 190 M (121:) s
+48 190 M
+(        self.dtype = torch.float32 ) s
+/Courier-Bold 10 10 SUF
+0.627451 0.12549 0.941176 setrgbcolor
+258 190 M
+(if) s
+/F-gs-font 10 10 SF
+0 setgray
+270 190 M
+( dtype == ) s
+/Courier-Bold 10 10 SUF
+0.737255 0.560784 0.560784 setrgbcolor
+330 190 M
+("float32") s
+/F-gs-font 10 10 SF
+0 setgray
+384 190 M
+( ) s
+/Courier-Bold 10 10 SUF
+0.627451 0.12549 0.941176 setrgbcolor
+390 190 M
+(else) s
+/F-gs-font 10 10 SF
+0 setgray
+414 190 M
+( torch.float64) s
+18 179 M (122:) s
+48 179 M
+(        self.device = torch.device\() s
+/Courier-Bold 10 10 SUF
+0.737255 0.560784 0.560784 setrgbcolor
+258 179 M
+("cuda") s
+/F-gs-font 10 10 SF
+0 setgray
+294 179 M
+(\) ) s
+/Courier-Bold 10 10 SUF
+0.627451 0.12549 0.941176 setrgbcolor
+306 179 M
+(if) s
+/F-gs-font 10 10 SF
+0 setgray
+318 179 M
+( device == ) s
+/Courier-Bold 10 10 SUF
+0.737255 0.560784 0.560784 setrgbcolor
+384 179 M
+("cuda") s
+/F-gs-font 10 10 SF
+0 setgray
+420 179 M
+( ) s
+/Courier-Bold 10 10 SUF
+0.627451 0.12549 0.941176 setrgbcolor
+426 179 M
+(else) s
+/F-gs-font 10 10 SF
+0 setgray
+450 179 M
+( torch.device\() s
+/Courier-Bold 10 10 SUF
+0.737255 0.560784 0.560784 setrgbcolor
+534 179 M
+("cpu") s
+/F-gs-font 10 10 SF
+0 setgray
+564 179 M
+(\)) s
+18 168 M (123:) s
+48 168 M
+(        ) s
+/Courier-Bold 10 10 SUF
+0.627451 0.12549 0.941176 setrgbcolor
+96 168 M
+(if) s
+/F-gs-font 10 10 SF
+0 setgray
+108 168 M
+( self.verbose:) s
+18 157 M (124:) s
+48 157 M
+(            ) s
+/Courier-Bold 10 10 SUF
+0.627451 0.12549 0.941176 setrgbcolor
+120 157 M
+(print) s
+/F-gs-font 10 10 SF
+0 setgray
+150 157 M
+(\() s
+/Courier-Bold 10 10 SUF
+0.737255 0.560784 0.560784 setrgbcolor
+156 157 M
+("Using dtype = %s \\nUsing device = %s") s
+/F-gs-font 10 10 SF
+0 setgray
+384 157 M
+( % \(self.dtype, self.device\)\)) s
+18 146 M (125:) s
+48 146 M
+(            sys.stdout.flush\(\)) s
+18 135 M (126:) s
+18 124 M (127:) s
+48 124 M
+(        ) s
+/Courier-Oblique 10 10 SUF
+0.698039 0.133333 0.133333 setrgbcolor
+96 124 M
+(# Initialize parameters) s
+/F-gs-font 10 10 SF
+18 113 M (128:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+0 setgray
+48 113 M
+(        self._restart\(\)) s
+18 102 M (129:) s
+18 91 M (130:) s
+48 91 M
+(    ) s
+/Courier-Bold 10 10 SUF
+0.627451 0.12549 0.941176 setrgbcolor
+72 91 M
+(def) s
+/F-gs-font 10 10 SF
+0 setgray
+90 91 M
+( ) s
+/Courier-Bold 10 10 SUF
+0 0 1 setrgbcolor
+96 91 M
+(_restart) s
+/F-gs-font 10 10 SF
+0 setgray
+144 91 M
+(\(self\):) s
+18 80 M (131:) s
+48 80 M
+(        self._X = []) s
+18 69 M (132:) s
+48 69 M
+(        self._fX = []) s
+18 58 M (133:) s
+48 58 M
+(        self.failcount = 0) s
+18 47 M (134:) s
+48 47 M
+(        self.succcount = 0) s
+18 36 M (135:) s
+48 36 M
+(        self.length = self.length_init) s
+18 25 M (136:) s
+18 14 M (137:) s
+48 14 M
+(    ) s
+/Courier-Bold 10 10 SUF
+0.627451 0.12549 0.941176 setrgbcolor
+72 14 M
+(def) s
+/F-gs-font 10 10 SF
+0 setgray
+90 14 M
+( ) s
+/Courier-Bold 10 10 SUF
+0 0 1 setrgbcolor
+96 14 M
+(_adjust_length) s
+/F-gs-font 10 10 SF
+0 setgray
+180 14 M
+(\(self, fX_next\):) s
+18 3 M (138:) s
+48 3 M
+(        ) s
+/Courier-Bold 10 10 SUF
+0.627451 0.12549 0.941176 setrgbcolor
+96 3 M
+(if) s
+/F-gs-font 10 10 SF
+0 setgray
+108 3 M
+( np.min\(fX_next\) < np.min\(self._fX\) - 1e-3 * math.fabs\(np.min\(self._fX\)\):) s
+_R
+S
+%%Page: (4) 4
+%%BeginPageSetup
+_S
+90 rotate
+24 -571 translate
+/pagenum 4 def
+/fname (turbo_1.py) def
+/fdir (.) def
+/ftail (turbo_1.py) def
+% User defined strings:
+/pagenumstr (4) def
+/moddatestr (12/20/19) def
+/modtimestr (05:42:16) def
+/user_header_p false def
+/user_footer_p false def
+%%EndPageSetup
+do_header
+18 498 M (139:) s
+48 498 M
+(            self.succcount += 1) s
+18 487 M (140:) s
+48 487 M
+(            self.failcount = 0) s
+18 476 M (141:) s
+48 476 M
+(        ) s
+/Courier-Bold 10 10 SUF
+0.627451 0.12549 0.941176 setrgbcolor
+96 476 M
+(else) s
+/F-gs-font 10 10 SF
+0 setgray
+120 476 M
+(:) s
+18 465 M (142:) s
+48 465 M
+(            self.succcount = 0) s
+18 454 M (143:) s
+48 454 M
+(            self.failcount += 1) s
+18 443 M (144:) s
+18 432 M (145:) s
+48 432 M
+(        ) s
+/Courier-Bold 10 10 SUF
+0.627451 0.12549 0.941176 setrgbcolor
+96 432 M
+(if) s
+/F-gs-font 10 10 SF
+0 setgray
+108 432 M
+( self.succcount == self.succtol:  ) s
+/Courier-Oblique 10 10 SUF
+0.698039 0.133333 0.133333 setrgbcolor
+312 432 M
+(# Expand trust region) s
+/F-gs-font 10 10 SF
+18 421 M (146:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+0 setgray
+48 421 M
+(            self.length = min\([2.0 * self.length, self.length_max]\)) s
+18 410 M (147:) s
+48 410 M
+(            self.succcount = 0) s
+18 399 M (148:) s
+48 399 M
+(        ) s
+/Courier-Bold 10 10 SUF
+0.627451 0.12549 0.941176 setrgbcolor
+96 399 M
+(elif) s
+/F-gs-font 10 10 SF
+0 setgray
+120 399 M
+( self.failcount == self.failtol:  ) s
+/Courier-Oblique 10 10 SUF
+0.698039 0.133333 0.133333 setrgbcolor
+324 399 M
+(# Shrink trust region) s
+/F-gs-font 10 10 SF
+18 388 M (149:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+0 setgray
+48 388 M
+(            self.length /= 2.0) s
+18 377 M (150:) s
+48 377 M
+(            self.failcount = 0) s
+18 366 M (151:) s
+18 355 M (152:) s
+48 355 M
+(    ) s
+/Courier-Bold 10 10 SUF
+0.627451 0.12549 0.941176 setrgbcolor
+72 355 M
+(def) s
+/F-gs-font 10 10 SF
+0 setgray
+90 355 M
+( ) s
+/Courier-Bold 10 10 SUF
+0 0 1 setrgbcolor
+96 355 M
+(_create_candidates) s
+/F-gs-font 10 10 SF
+0 setgray
+204 355 M
+(\(self, X, fX, length, n_training_steps, hypers\):) s
+18 344 M (153:) s
+48 344 M
+(        ) s
+/Courier-Bold 10 10 SUF
+0.737255 0.560784 0.560784 setrgbcolor
+96 344 M
+("""Generate candidates assuming X has been scaled to [0,1]^d.""") s
+/F-gs-font 10 10 SF
+0 setgray
+18 333 M (154:) s
+48 333 M
+(        ) s
+/Courier-Oblique 10 10 SUF
+0.698039 0.133333 0.133333 setrgbcolor
+96 333 M
+(# Pick the center as the point with the smallest function values) s
+/F-gs-font 10 10 SF
+18 322 M (155:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+0 setgray
+48 322 M
+(        ) s
+/Courier-Oblique 10 10 SUF
+0.698039 0.133333 0.133333 setrgbcolor
+96 322 M
+(# NOTE: This may not be robust to noise, in which case the posterior mean of the GP can be used instead) s
+/F-gs-font 10 10 SF
+18 311 M (156:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+0 setgray
+48 311 M
+(        ) s
+/Courier-Bold 10 10 SUF
+0.627451 0.12549 0.941176 setrgbcolor
+96 311 M
+(assert) s
+/F-gs-font 10 10 SF
+0 setgray
+132 311 M
+( X.min\(\) >= 0.0 ) s
+/Courier-Bold 10 10 SUF
+0.627451 0.12549 0.941176 setrgbcolor
+228 311 M
+(and) s
+/F-gs-font 10 10 SF
+0 setgray
+246 311 M
+( X.max\(\) <= 1.0) s
+18 300 M (157:) s
+18 289 M (158:) s
+48 289 M
+(        ) s
+/Courier-Oblique 10 10 SUF
+0.698039 0.133333 0.133333 setrgbcolor
+96 289 M
+(# Standardize function values.) s
+/F-gs-font 10 10 SF
+18 278 M (159:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+0 setgray
+48 278 M
+(        mu, sigma = np.median\(fX\), fX.std\(\)) s
+18 267 M (160:) s
+48 267 M
+(        sigma = 1.0 ) s
+/Courier-Bold 10 10 SUF
+0.627451 0.12549 0.941176 setrgbcolor
+168 267 M
+(if) s
+/F-gs-font 10 10 SF
+0 setgray
+180 267 M
+( sigma < 1e-6 ) s
+/Courier-Bold 10 10 SUF
+0.627451 0.12549 0.941176 setrgbcolor
+264 267 M
+(else) s
+/F-gs-font 10 10 SF
+0 setgray
+288 267 M
+( sigma) s
+18 256 M (161:) s
+48 256 M
+(        fX = \(deepcopy\(fX\) - mu\) / sigma) s
+18 245 M (162:) s
+18 234 M (163:) s
+48 234 M
+(        ) s
+/Courier-Oblique 10 10 SUF
+0.698039 0.133333 0.133333 setrgbcolor
+96 234 M
+(# Figure out what device we are running on) s
+/F-gs-font 10 10 SF
+18 223 M (164:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+0 setgray
+48 223 M
+(        ) s
+/Courier-Bold 10 10 SUF
+0.627451 0.12549 0.941176 setrgbcolor
+96 223 M
+(if) s
+/F-gs-font 10 10 SF
+0 setgray
+108 223 M
+( len\(X\) < self.min_cuda:) s
+18 212 M (165:) s
+48 212 M
+(            device, dtype = torch.device\() s
+/Courier-Bold 10 10 SUF
+0.737255 0.560784 0.560784 setrgbcolor
+294 212 M
+("cpu") s
+/F-gs-font 10 10 SF
+0 setgray
+324 212 M
+(\), torch.float64) s
+18 201 M (166:) s
+48 201 M
+(        ) s
+/Courier-Bold 10 10 SUF
+0.627451 0.12549 0.941176 setrgbcolor
+96 201 M
+(else) s
+/F-gs-font 10 10 SF
+0 setgray
+120 201 M
+(:) s
+18 190 M (167:) s
+48 190 M
+(            device, dtype = self.device, self.dtype) s
+18 179 M (168:) s
+18 168 M (169:) s
+48 168 M
+(        ) s
+/Courier-Oblique 10 10 SUF
+0.698039 0.133333 0.133333 setrgbcolor
+96 168 M
+(# We use CG + Lanczos for training if we have enough data) s
+/F-gs-font 10 10 SF
+18 157 M (170:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+0 setgray
+48 157 M
+(        with gpytorch.settings.max_cholesky_size\(self.max_cholesky_size\):) s
+18 146 M (171:) s
+48 146 M
+(            X_torch = torch.tensor\(X\).to\(device=device, dtype=dtype\)) s
+18 135 M (172:) s
+48 135 M
+(            y_torch = torch.tensor\(fX\).to\(device=device, dtype=dtype\)) s
+18 124 M (173:) s
+48 124 M
+(            gp = train_gp\() s
+18 113 M (174:) s
+48 113 M
+(                train_x=X_torch, train_y=y_torch, use_ard=self.use_ard, num_steps=n_training_steps, hypers=hypers) s
+18 102 M (175:) s
+48 102 M
+(            \)) s
+18 91 M (176:) s
+18 80 M (177:) s
+48 80 M
+(            ) s
+/Courier-Oblique 10 10 SUF
+0.698039 0.133333 0.133333 setrgbcolor
+120 80 M
+(# Save state dict) s
+/F-gs-font 10 10 SF
+18 69 M (178:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+0 setgray
+48 69 M
+(            hypers = gp.state_dict\(\)) s
+18 58 M (179:) s
+18 47 M (180:) s
+48 47 M
+(        ) s
+/Courier-Oblique 10 10 SUF
+0.698039 0.133333 0.133333 setrgbcolor
+96 47 M
+(# Create the trust region boundaries) s
+/F-gs-font 10 10 SF
+18 36 M (181:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+0 setgray
+48 36 M
+(        x_center = X[fX.argmin\(\).item\(\), :][None, :]) s
+18 25 M (182:) s
+48 25 M
+(        weights = gp.covar_module.base_kernel.lengthscale.cpu\(\).detach\(\).numpy\(\).ravel\(\)) s
+18 14 M (183:) s
+48 14 M
+(        weights = weights / weights.mean\(\)  ) s
+/Courier-Oblique 10 10 SUF
+0.698039 0.133333 0.133333 setrgbcolor
+312 14 M
+(# This will make the next line more stable) s
+/F-gs-font 10 10 SF
+18 3 M (184:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+0 setgray
+48 3 M
+(        weights = weights / np.prod\(np.power\(weights, 1.0 / len\(weights\)\)\)  ) s
+/Courier-Oblique 10 10 SUF
+0.698039 0.133333 0.133333 setrgbcolor
+504 3 M
+(# We now have weights.prod\(\) = 1) s
+_R
+S
+%%Page: (5) 5
+%%BeginPageSetup
+_S
+90 rotate
+24 -571 translate
+/pagenum 5 def
+/fname (turbo_1.py) def
+/fdir (.) def
+/ftail (turbo_1.py) def
+/Courier-Oblique 10 10 SUF
+% User defined strings:
+/pagenumstr (5) def
+/moddatestr (12/20/19) def
+/modtimestr (05:42:16) def
+/user_header_p false def
+/user_footer_p false def
+%%EndPageSetup
+do_header
+0.698039 0.133333 0.133333 setrgbcolor
+/F-gs-font 10 10 SF
+18 498 M (185:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+0 setgray
+48 498 M
+(        lb = np.clip\(x_center - weights * length / 2.0, 0.0, 1.0\)) s
+18 487 M (186:) s
+48 487 M
+(        ub = np.clip\(x_center + weights * length / 2.0, 0.0, 1.0\)) s
+18 476 M (187:) s
+18 465 M (188:) s
+48 465 M
+(        ) s
+/Courier-Oblique 10 10 SUF
+0.698039 0.133333 0.133333 setrgbcolor
+96 465 M
+(# Draw a Sobolev sequence in [lb, ub]) s
+/F-gs-font 10 10 SF
+18 454 M (189:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+0 setgray
+48 454 M
+(        seed = np.random.randint\(int\(1e6\)\)) s
+18 443 M (190:) s
+48 443 M
+(        sobol = SobolEngine\(self.dim, scramble=True, seed=seed\)) s
+18 432 M (191:) s
+48 432 M
+(        pert = sobol.draw\(self.n_cand\).to\(dtype=dtype, device=device\).cpu\(\).detach\(\).numpy\(\)) s
+18 421 M (192:) s
+48 421 M
+(        pert = lb + \(ub - lb\) * pert) s
+18 410 M (193:) s
+18 399 M (194:) s
+48 399 M
+(        ) s
+/Courier-Oblique 10 10 SUF
+0.698039 0.133333 0.133333 setrgbcolor
+96 399 M
+(# Create a perturbation mask) s
+/F-gs-font 10 10 SF
+18 388 M (195:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+0 setgray
+48 388 M
+(        prob_perturb = min\(20.0 / self.dim, 1.0\)) s
+18 377 M (196:) s
+48 377 M
+(        mask = np.random.rand\(self.n_cand, self.dim\) <= prob_perturb) s
+18 366 M (197:) s
+48 366 M
+(        ind = np.where\(np.sum\(mask, axis=1\) == 0\)[0]) s
+18 355 M (198:) s
+48 355 M
+(        mask[ind, np.random.randint\(0, self.dim - 1, size=len\(ind\)\)] = 1) s
+18 344 M (199:) s
+18 333 M (200:) s
+48 333 M
+(        ) s
+/Courier-Oblique 10 10 SUF
+0.698039 0.133333 0.133333 setrgbcolor
+96 333 M
+(# Create candidate points) s
+/F-gs-font 10 10 SF
+18 322 M (201:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+0 setgray
+48 322 M
+(        X_cand = x_center.copy\(\) * np.ones\(\(self.n_cand, self.dim\)\)) s
+18 311 M (202:) s
+48 311 M
+(        X_cand[mask] = pert[mask]) s
+18 300 M (203:) s
+18 289 M (204:) s
+48 289 M
+(        ) s
+/Courier-Oblique 10 10 SUF
+0.698039 0.133333 0.133333 setrgbcolor
+96 289 M
+(# Figure out what device we are running on) s
+/F-gs-font 10 10 SF
+18 278 M (205:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+0 setgray
+48 278 M
+(        ) s
+/Courier-Bold 10 10 SUF
+0.627451 0.12549 0.941176 setrgbcolor
+96 278 M
+(if) s
+/F-gs-font 10 10 SF
+0 setgray
+108 278 M
+( len\(X_cand\) < self.min_cuda:) s
+18 267 M (206:) s
+48 267 M
+(            device, dtype = torch.device\() s
+/Courier-Bold 10 10 SUF
+0.737255 0.560784 0.560784 setrgbcolor
+294 267 M
+("cpu") s
+/F-gs-font 10 10 SF
+0 setgray
+324 267 M
+(\), torch.float64) s
+18 256 M (207:) s
+48 256 M
+(        ) s
+/Courier-Bold 10 10 SUF
+0.627451 0.12549 0.941176 setrgbcolor
+96 256 M
+(else) s
+/F-gs-font 10 10 SF
+0 setgray
+120 256 M
+(:) s
+18 245 M (208:) s
+48 245 M
+(            device, dtype = self.device, self.dtype) s
+18 234 M (209:) s
+18 223 M (210:) s
+48 223 M
+(        ) s
+/Courier-Oblique 10 10 SUF
+0.698039 0.133333 0.133333 setrgbcolor
+96 223 M
+(# We may have to move the GP to a new device) s
+/F-gs-font 10 10 SF
+18 212 M (211:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+0 setgray
+48 212 M
+(        gp = gp.to\(dtype=dtype, device=device\)) s
+18 201 M (212:) s
+18 190 M (213:) s
+48 190 M
+(        ) s
+/Courier-Oblique 10 10 SUF
+0.698039 0.133333 0.133333 setrgbcolor
+96 190 M
+(# We use Lanczos for sampling if we have enough data) s
+/F-gs-font 10 10 SF
+18 179 M (214:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+0 setgray
+48 179 M
+(        with torch.no_grad\(\), gpytorch.settings.max_cholesky_size\(self.max_cholesky_size\):) s
+18 168 M (215:) s
+48 168 M
+(            X_cand_torch = torch.tensor\(X_cand\).to\(device=device, dtype=dtype\)) s
+18 157 M (216:) s
+48 157 M
+(            y_cand = gp.likelihood\(gp\(X_cand_torch\)\).sample\(torch.Size\([self.batch_size]\)\).t\(\).cpu\(\).detach\(\).numpy\(\)) s
+18 146 M (217:) s
+18 135 M (218:) s
+48 135 M
+(        ) s
+/Courier-Oblique 10 10 SUF
+0.698039 0.133333 0.133333 setrgbcolor
+96 135 M
+(# Remove the torch variables) s
+/F-gs-font 10 10 SF
+18 124 M (219:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+0 setgray
+48 124 M
+(        ) s
+/Courier-Bold 10 10 SUF
+0.627451 0.12549 0.941176 setrgbcolor
+96 124 M
+(del) s
+/F-gs-font 10 10 SF
+0 setgray
+114 124 M
+( X_torch, y_torch, X_cand_torch, gp) s
+18 113 M (220:) s
+18 102 M (221:) s
+48 102 M
+(        ) s
+/Courier-Oblique 10 10 SUF
+0.698039 0.133333 0.133333 setrgbcolor
+96 102 M
+(# De-standardize the sampled values) s
+/F-gs-font 10 10 SF
+18 91 M (222:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+0 setgray
+48 91 M
+(        y_cand = mu + sigma * y_cand) s
+18 80 M (223:) s
+18 69 M (224:) s
+48 69 M
+(        ) s
+/Courier-Bold 10 10 SUF
+0.627451 0.12549 0.941176 setrgbcolor
+96 69 M
+(return) s
+/F-gs-font 10 10 SF
+0 setgray
+132 69 M
+( X_cand, y_cand, hypers) s
+18 58 M (225:) s
+18 47 M (226:) s
+48 47 M
+(    ) s
+/Courier-Bold 10 10 SUF
+0.627451 0.12549 0.941176 setrgbcolor
+72 47 M
+(def) s
+/F-gs-font 10 10 SF
+0 setgray
+90 47 M
+( ) s
+/Courier-Bold 10 10 SUF
+0 0 1 setrgbcolor
+96 47 M
+(_select_candidates) s
+/F-gs-font 10 10 SF
+0 setgray
+204 47 M
+(\(self, X_cand, y_cand\):) s
+18 36 M (227:) s
+48 36 M
+(        ) s
+/Courier-Bold 10 10 SUF
+0.737255 0.560784 0.560784 setrgbcolor
+96 36 M
+("""Select candidates.""") s
+/F-gs-font 10 10 SF
+0 setgray
+18 25 M (228:) s
+48 25 M
+(        X_next = np.ones\(\(self.batch_size, self.dim\)\)) s
+18 14 M (229:) s
+48 14 M
+(        ) s
+/Courier-Bold 10 10 SUF
+0.627451 0.12549 0.941176 setrgbcolor
+96 14 M
+(for) s
+/F-gs-font 10 10 SF
+0 setgray
+114 14 M
+( i ) s
+/Courier-Bold 10 10 SUF
+0.627451 0.12549 0.941176 setrgbcolor
+132 14 M
+(in) s
+/F-gs-font 10 10 SF
+0 setgray
+144 14 M
+( range\(self.batch_size\):) s
+18 3 M (230:) s
+48 3 M
+(            ) s
+/Courier-Oblique 10 10 SUF
+0.698039 0.133333 0.133333 setrgbcolor
+120 3 M
+(# Pick the best point and make sure we never pick it again) s
+_R
+S
+%%Page: (6) 6
+%%BeginPageSetup
+_S
+90 rotate
+24 -571 translate
+/pagenum 6 def
+/fname (turbo_1.py) def
+/fdir (.) def
+/ftail (turbo_1.py) def
+/Courier-Oblique 10 10 SUF
+% User defined strings:
+/pagenumstr (6) def
+/moddatestr (12/20/19) def
+/modtimestr (05:42:16) def
+/user_header_p false def
+/user_footer_p false def
+%%EndPageSetup
+do_header
+0.698039 0.133333 0.133333 setrgbcolor
+/F-gs-font 10 10 SF
+18 498 M (231:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+0 setgray
+48 498 M
+(            indbest = np.argmin\(y_cand[:, i]\)) s
+18 487 M (232:) s
+48 487 M
+(            X_next[i, :] = deepcopy\(X_cand[indbest, :]\)) s
+18 476 M (233:) s
+48 476 M
+(            y_cand[indbest, :] = np.inf) s
+18 465 M (234:) s
+48 465 M
+(        ) s
+/Courier-Bold 10 10 SUF
+0.627451 0.12549 0.941176 setrgbcolor
+96 465 M
+(return) s
+/F-gs-font 10 10 SF
+0 setgray
+132 465 M
+( X_next) s
+18 454 M (235:) s
+18 443 M (236:) s
+48 443 M
+(    ) s
+/Courier-Bold 10 10 SUF
+0.627451 0.12549 0.941176 setrgbcolor
+72 443 M
+(def) s
+/F-gs-font 10 10 SF
+0 setgray
+90 443 M
+( ) s
+/Courier-Bold 10 10 SUF
+0 0 1 setrgbcolor
+96 443 M
+(optimize) s
+/F-gs-font 10 10 SF
+0 setgray
+144 443 M
+(\(self\):) s
+18 432 M (237:) s
+48 432 M
+(        ) s
+/Courier-Bold 10 10 SUF
+0.737255 0.560784 0.560784 setrgbcolor
+96 432 M
+("""Run the full optimization process.""") s
+/F-gs-font 10 10 SF
+0 setgray
+18 421 M (238:) s
+48 421 M
+(        ) s
+/Courier-Bold 10 10 SUF
+0.627451 0.12549 0.941176 setrgbcolor
+96 421 M
+(while) s
+/F-gs-font 10 10 SF
+0 setgray
+126 421 M
+( self.n_evals < self.max_evals:) s
+18 410 M (239:) s
+48 410 M
+(            ) s
+/Courier-Bold 10 10 SUF
+0.627451 0.12549 0.941176 setrgbcolor
+120 410 M
+(if) s
+/F-gs-font 10 10 SF
+0 setgray
+132 410 M
+( len\(self._fX\) > 0 ) s
+/Courier-Bold 10 10 SUF
+0.627451 0.12549 0.941176 setrgbcolor
+246 410 M
+(and) s
+/F-gs-font 10 10 SF
+0 setgray
+264 410 M
+( self.verbose:) s
+18 399 M (240:) s
+48 399 M
+(                n_evals, fbest = self.n_evals, self._fX.min\(\)) s
+18 388 M (241:) s
+48 388 M
+(                ) s
+/Courier-Bold 10 10 SUF
+0.627451 0.12549 0.941176 setrgbcolor
+144 388 M
+(print) s
+/F-gs-font 10 10 SF
+0 setgray
+174 388 M
+(\(f) s
+/Courier-Bold 10 10 SUF
+0.737255 0.560784 0.560784 setrgbcolor
+186 388 M
+("{n_evals}\) Restarting with fbest = {fbest:.4}") s
+/F-gs-font 10 10 SF
+0 setgray
+468 388 M
+(\)) s
+18 377 M (242:) s
+48 377 M
+(                sys.stdout.flush\(\)) s
+18 366 M (243:) s
+18 355 M (244:) s
+48 355 M
+(            ) s
+/Courier-Oblique 10 10 SUF
+0.698039 0.133333 0.133333 setrgbcolor
+120 355 M
+(# Initialize parameters) s
+/F-gs-font 10 10 SF
+18 344 M (245:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+0 setgray
+48 344 M
+(            self._restart\(\)) s
+18 333 M (246:) s
+18 322 M (247:) s
+48 322 M
+(            ) s
+/Courier-Oblique 10 10 SUF
+0.698039 0.133333 0.133333 setrgbcolor
+120 322 M
+(# Generate and evalute initial design points) s
+/F-gs-font 10 10 SF
+18 311 M (248:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+0 setgray
+48 311 M
+(            X_init = latin_hypercube\(self.n_init, self.dim\)) s
+18 300 M (249:) s
+48 300 M
+(            X_init = from_unit_cube\(X_init, self.lb, self.ub\)) s
+18 289 M (250:) s
+48 289 M
+(            fX_init = np.array\([[self.f\(x\)] ) s
+/Courier-Bold 10 10 SUF
+0.627451 0.12549 0.941176 setrgbcolor
+312 289 M
+(for) s
+/F-gs-font 10 10 SF
+0 setgray
+330 289 M
+( x ) s
+/Courier-Bold 10 10 SUF
+0.627451 0.12549 0.941176 setrgbcolor
+348 289 M
+(in) s
+/F-gs-font 10 10 SF
+0 setgray
+360 289 M
+( X_init]\)) s
+18 278 M (251:) s
+18 267 M (252:) s
+48 267 M
+(            ) s
+/Courier-Oblique 10 10 SUF
+0.698039 0.133333 0.133333 setrgbcolor
+120 267 M
+(# Update budget and set as initial data for this TR) s
+/F-gs-font 10 10 SF
+18 256 M (253:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+0 setgray
+48 256 M
+(            self.n_evals += self.n_init) s
+18 245 M (254:) s
+48 245 M
+(            self._X = deepcopy\(X_init\)) s
+18 234 M (255:) s
+48 234 M
+(            self._fX = deepcopy\(fX_init\)) s
+18 223 M (256:) s
+18 212 M (257:) s
+48 212 M
+(            ) s
+/Courier-Oblique 10 10 SUF
+0.698039 0.133333 0.133333 setrgbcolor
+120 212 M
+(# Append data to the global history) s
+/F-gs-font 10 10 SF
+18 201 M (258:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+0 setgray
+48 201 M
+(            self.X = np.vstack\(\(self.X, deepcopy\(X_init\)\)\)) s
+18 190 M (259:) s
+48 190 M
+(            self.fX = np.vstack\(\(self.fX, deepcopy\(fX_init\)\)\)) s
+18 179 M (260:) s
+18 168 M (261:) s
+48 168 M
+(            ) s
+/Courier-Bold 10 10 SUF
+0.627451 0.12549 0.941176 setrgbcolor
+120 168 M
+(if) s
+/F-gs-font 10 10 SF
+0 setgray
+132 168 M
+( self.verbose:) s
+18 157 M (262:) s
+48 157 M
+(                fbest = self._fX.min\(\)) s
+18 146 M (263:) s
+48 146 M
+(                ) s
+/Courier-Bold 10 10 SUF
+0.627451 0.12549 0.941176 setrgbcolor
+144 146 M
+(print) s
+/F-gs-font 10 10 SF
+0 setgray
+174 146 M
+(\(f) s
+/Courier-Bold 10 10 SUF
+0.737255 0.560784 0.560784 setrgbcolor
+186 146 M
+("Starting from fbest = {fbest:.4}") s
+/F-gs-font 10 10 SF
+0 setgray
+390 146 M
+(\)) s
+18 135 M (264:) s
+48 135 M
+(                sys.stdout.flush\(\)) s
+18 124 M (265:) s
+18 113 M (266:) s
+48 113 M
+(            ) s
+/Courier-Oblique 10 10 SUF
+0.698039 0.133333 0.133333 setrgbcolor
+120 113 M
+(# Thompson sample to get next suggestions) s
+/F-gs-font 10 10 SF
+18 102 M (267:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+0 setgray
+48 102 M
+(            ) s
+/Courier-Bold 10 10 SUF
+0.627451 0.12549 0.941176 setrgbcolor
+120 102 M
+(while) s
+/F-gs-font 10 10 SF
+0 setgray
+150 102 M
+( self.n_evals < self.max_evals ) s
+/Courier-Bold 10 10 SUF
+0.627451 0.12549 0.941176 setrgbcolor
+336 102 M
+(and) s
+/F-gs-font 10 10 SF
+0 setgray
+354 102 M
+( self.length >= self.length_min:) s
+18 91 M (268:) s
+48 91 M
+(                ) s
+/Courier-Oblique 10 10 SUF
+0.698039 0.133333 0.133333 setrgbcolor
+144 91 M
+(# Warp inputs) s
+/F-gs-font 10 10 SF
+18 80 M (269:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+0 setgray
+48 80 M
+(                X = to_unit_cube\(deepcopy\(self._X\), self.lb, self.ub\)) s
+18 69 M (270:) s
+18 58 M (271:) s
+48 58 M
+(                ) s
+/Courier-Oblique 10 10 SUF
+0.698039 0.133333 0.133333 setrgbcolor
+144 58 M
+(# Standardize values) s
+/F-gs-font 10 10 SF
+18 47 M (272:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+0 setgray
+48 47 M
+(                fX = deepcopy\(self._fX\).ravel\(\)) s
+18 36 M (273:) s
+18 25 M (274:) s
+48 25 M
+(                ) s
+/Courier-Oblique 10 10 SUF
+0.698039 0.133333 0.133333 setrgbcolor
+144 25 M
+(# Create th next batch) s
+/F-gs-font 10 10 SF
+18 14 M (275:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+0 setgray
+48 14 M
+(                X_cand, y_cand, _ = self._create_candidates\() s
+18 3 M (276:) s
+48 3 M
+(                    X, fX, length=self.length, n_training_steps=self.n_training_steps, hypers={}) s
+_R
+S
+%%Page: (7) 7
+%%BeginPageSetup
+_S
+90 rotate
+24 -571 translate
+/pagenum 7 def
+/fname (turbo_1.py) def
+/fdir (.) def
+/ftail (turbo_1.py) def
+% User defined strings:
+/pagenumstr (7) def
+/moddatestr (12/20/19) def
+/modtimestr (05:42:16) def
+/user_header_p false def
+/user_footer_p false def
+%%EndPageSetup
+do_header
+18 498 M (277:) s
+48 498 M
+(                \)) s
+18 487 M (278:) s
+48 487 M
+(                X_next = self._select_candidates\(X_cand, y_cand\)) s
+18 476 M (279:) s
+18 465 M (280:) s
+48 465 M
+(                ) s
+/Courier-Oblique 10 10 SUF
+0.698039 0.133333 0.133333 setrgbcolor
+144 465 M
+(# Undo the warping) s
+/F-gs-font 10 10 SF
+18 454 M (281:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+0 setgray
+48 454 M
+(                X_next = from_unit_cube\(X_next, self.lb, self.ub\)) s
+18 443 M (282:) s
+18 432 M (283:) s
+48 432 M
+(                ) s
+/Courier-Oblique 10 10 SUF
+0.698039 0.133333 0.133333 setrgbcolor
+144 432 M
+(# Evaluate batch) s
+/F-gs-font 10 10 SF
+18 421 M (284:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+0 setgray
+48 421 M
+(                fX_next = np.array\([[self.f\(x\)] ) s
+/Courier-Bold 10 10 SUF
+0.627451 0.12549 0.941176 setrgbcolor
+336 421 M
+(for) s
+/F-gs-font 10 10 SF
+0 setgray
+354 421 M
+( x ) s
+/Courier-Bold 10 10 SUF
+0.627451 0.12549 0.941176 setrgbcolor
+372 421 M
+(in) s
+/F-gs-font 10 10 SF
+0 setgray
+384 421 M
+( X_next]\)) s
+18 410 M (285:) s
+18 399 M (286:) s
+48 399 M
+(                ) s
+/Courier-Oblique 10 10 SUF
+0.698039 0.133333 0.133333 setrgbcolor
+144 399 M
+(# Update trust region) s
+/F-gs-font 10 10 SF
+18 388 M (287:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+0 setgray
+48 388 M
+(                self._adjust_length\(fX_next\)) s
+18 377 M (288:) s
+18 366 M (289:) s
+48 366 M
+(                ) s
+/Courier-Oblique 10 10 SUF
+0.698039 0.133333 0.133333 setrgbcolor
+144 366 M
+(# Update budget and append data) s
+/F-gs-font 10 10 SF
+18 355 M (290:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+0 setgray
+48 355 M
+(                self.n_evals += self.batch_size) s
+18 344 M (291:) s
+48 344 M
+(                self._X = np.vstack\(\(self._X, X_next\)\)) s
+18 333 M (292:) s
+48 333 M
+(                self._fX = np.vstack\(\(self._fX, fX_next\)\)) s
+18 322 M (293:) s
+18 311 M (294:) s
+48 311 M
+(                ) s
+/Courier-Bold 10 10 SUF
+0.627451 0.12549 0.941176 setrgbcolor
+144 311 M
+(if) s
+/F-gs-font 10 10 SF
+0 setgray
+156 311 M
+( self.verbose ) s
+/Courier-Bold 10 10 SUF
+0.627451 0.12549 0.941176 setrgbcolor
+240 311 M
+(and) s
+/F-gs-font 10 10 SF
+0 setgray
+258 311 M
+( fX_next.min\(\) < self.fX.min\(\):) s
+18 300 M (295:) s
+48 300 M
+(                    n_evals, fbest = self.n_evals, fX_next.min\(\)) s
+18 289 M (296:) s
+48 289 M
+(                    ) s
+/Courier-Bold 10 10 SUF
+0.627451 0.12549 0.941176 setrgbcolor
+168 289 M
+(print) s
+/F-gs-font 10 10 SF
+0 setgray
+198 289 M
+(\(f) s
+/Courier-Bold 10 10 SUF
+0.737255 0.560784 0.560784 setrgbcolor
+210 289 M
+("{n_evals}\) New best: {fbest:.4}") s
+/F-gs-font 10 10 SF
+0 setgray
+408 289 M
+(\)) s
+18 278 M (297:) s
+48 278 M
+(                    sys.stdout.flush\(\)) s
+18 267 M (298:) s
+18 256 M (299:) s
+48 256 M
+(                ) s
+/Courier-Oblique 10 10 SUF
+0.698039 0.133333 0.133333 setrgbcolor
+144 256 M
+(# Append data to the global history) s
+/F-gs-font 10 10 SF
+18 245 M (300:) s
+/Courier-Oblique 10 10 SUF
+/F-gs-font 10 10 SF
+0 setgray
+48 245 M
+(                self.X = np.vstack\(\(self.X, deepcopy\(X_next\)\)\)) s
+18 234 M (301:) s
+48 234 M
+(                self.fX = np.vstack\(\(self.fX, deepcopy\(fX_next\)\)\)) s
+_R
+S
+%%Trailer
+%%Pages: 7
+%%DocumentNeededResources: font Times-Roman Courier-Oblique Courier-Bold 
+%%+ font Courier Times-Bold 
+%%EOF
